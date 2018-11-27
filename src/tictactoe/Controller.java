@@ -13,6 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import tictactoe.event.GameWonEvent;
 import tictactoe.event.RequestNewGameEvent;
+import tictactoe.event.SwitchTrybeEvent;
 
 public class Controller {
 
@@ -21,6 +22,7 @@ public class Controller {
     public void setMainController(ApplicationController mainController) {
         this.mainController = mainController;
         mainController.registerHandler(RequestNewGameEvent.class, event -> startNewGame());
+        mainController.registerHandler(SwitchTrybeEvent.class, event -> changeTrybe());
     }
 
     @FXML
@@ -28,6 +30,9 @@ public class Controller {
 
     protected boolean gameEnded;
     protected Board board;
+    protected boolean comp = true;
+
+
 
     public void initialize() {
         for (Node child : grid.getChildren()) {
@@ -42,8 +47,10 @@ public class Controller {
         if (!gameEnded) {
             if (board.canYouMakeAMove(row, column)) {
                 board.makeMove(row, column);
-                if (!checkVictoryShowAndRegister()) {
-                    board.makeComputerMove();
+                if (comp) {
+                    if (!checkVictoryShowAndRegister()) {
+                        board.makeComputerMove();
+                    }
                 }
             }
             drawBoard();
@@ -90,5 +97,13 @@ public class Controller {
         gameEnded = false;
         board = new Board();
         drawBoard();
+    }
+
+    private void changeTrybe() {
+        if (comp){
+            comp = false;
+        }   else {
+            comp = true;
+        }
     }
 }

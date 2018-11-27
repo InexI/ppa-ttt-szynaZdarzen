@@ -10,5 +10,6 @@
       <Label alignment="CENTER" text="Gracz X: 0" fx:id="krzyzyk" />
       <Label alignment="CENTER" text="Gracz O: 0" fx:id="kolko" />
       <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" text="Nowa gra" onAction="#newGame" />
+      <Button fx:id="twoP" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#switchTrybe" text="Gra na 2" visible="true" />
    </children>
 </VBox>
