@@ -13,7 +13,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import tictactoe.event.GameWonEvent;
 import tictactoe.event.RequestNewGameEvent;
-import tictactoe.event.SwitchTrybeEvent;
 
 public class Controller {
 
@@ -21,8 +20,7 @@ public class Controller {
 
     public void setMainController(ApplicationController mainController) {
         this.mainController = mainController;
-        mainController.registerHandler(RequestNewGameEvent.class, event -> startNewGame());
-        mainController.registerHandler(SwitchTrybeEvent.class, event -> changeTrybe());
+        mainController.registerHandler(RequestNewGameEvent.class, event -> startNewGame(event.isComp()));
     }
 
     @FXML
@@ -30,8 +28,7 @@ public class Controller {
 
     protected boolean gameEnded;
     protected Board board;
-    protected boolean comp = true;
-
+    protected boolean twoP;
 
 
     public void initialize() {
@@ -40,14 +37,14 @@ public class Controller {
             Integer column = Optional.ofNullable(GridPane.getColumnIndex(child)).orElse(0);
             child.setOnMouseClicked(event -> handleMove(row, column));
         }
-        startNewGame();
+        startNewGame(false);
     }
 
     private void handleMove(Integer row, Integer column) {
         if (!gameEnded) {
             if (board.canYouMakeAMove(row, column)) {
                 board.makeMove(row, column);
-                if (comp) {
+                if (!twoP) {
                     if (!checkVictoryShowAndRegister()) {
                         board.makeComputerMove();
                     }
@@ -93,17 +90,28 @@ public class Controller {
         alert.showAndWait();
     }
 
-    private void startNewGame() {
+    private void startNewGame(boolean comp) {
         gameEnded = false;
         board = new Board();
         drawBoard();
+
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Typ gry");
+        alert.setHeaderText("Jak chcesz grać?");
+        alert.setContentText("Wybierz rodzaj gry");
+
+        ButtonType buttonTypeOne = new ButtonType("z komputerem");
+        ButtonType buttonTypeTwo = new ButtonType("Na dwóch");
+
+        alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == buttonTypeOne){
+            twoP = false;
+        } else if (result.get() == buttonTypeTwo) {
+            twoP = true;
+        }
+
     }
 
-    private void changeTrybe() {
-        if (comp){
-            comp = false;
-        }   else {
-            comp = true;
-        }
-    }
 }
